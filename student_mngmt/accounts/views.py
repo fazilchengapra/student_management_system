@@ -81,7 +81,7 @@ def admin_base(req):
 @login_required
 def student_base(req):
     if req.user.is_staff:
-        return redirect('admin')
+        return redirect("admin")
     return render(req, "layouts/student_base.html")
 
 
@@ -116,7 +116,7 @@ def edit_student(req, stdId):
         return redirect("login")
 
     student = get_object_or_404(User, id=stdId)
-    form = UpdateStudentForm(req.POST or None, instance=student)
+    form = UpdateStudentForm(req.POST or None,req.FILES, instance=student)
 
     if req.method == "POST":
         print(req.POST)
@@ -165,3 +165,20 @@ def delete_student(req, stdId):
     messages.success(req, f"user {user.id} deleted success!")
 
     return redirect("student_mgmt")
+
+
+@login_required
+def add_new_student(req):
+    if req.user.is_staff:
+        if req.method == "POST":
+            form = RegisterForm(req.POST, req.FILES)
+            if form.is_valid():
+                user = form.save(commit=False)
+                print(req.POST.get('is_active'))
+                user.is_active = req.POST.get('is_active') == '1'
+                user.save()
+                messages.success(req, "user created success")
+                return redirect("student_mgmt")
+
+        return render(req, "admin/students/add_student.html")
+    return redirect("login")
