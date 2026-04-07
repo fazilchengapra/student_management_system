@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 
-from .forms import RegisterForm, UpdateStudentForm
+from .forms import RegisterForm, UpdateStudentForm, StudentSelfUpdateForm
 from .models import User
 
 
@@ -84,9 +84,20 @@ def student_base(req):
         return redirect("admin")
     return render(req, "layouts/student_base.html")
 
-
+# for individual students only.
 @login_required
 def my_profile(req):
+    if req.user.is_staff:
+        return redirect('admin')
+    if req.method == 'POST':
+        form = StudentSelfUpdateForm(req.POST, req.FILES, instance=req.user)
+        
+        print(req.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(req, 'Profile updated success!')
+            return redirect('my_profile')
+        
     return render(req, "student/profile/profile.html")
 
 
@@ -176,6 +187,7 @@ def add_new_student(req):
                 user = form.save(commit=False)
                 print(req.POST.get('is_active'))
                 user.is_active = req.POST.get('is_active') == '1'
+                user.set_password(form.cleaned_data['password'])
                 user.save()
                 messages.success(req, "user created success")
                 return redirect("student_mgmt")

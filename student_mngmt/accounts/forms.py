@@ -93,3 +93,41 @@ class UpdateStudentForm(forms.ModelForm):
             raise forms.ValidationError("Invalid date of birth")
 
         return date_of_birth
+
+
+class StudentSelfUpdateForm(forms.ModelForm):
+
+    date_of_birth = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}), required=False
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "email",
+            "phone",
+            "date_of_birth",
+            "profile_picture",
+        ]
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+
+        qs = User.objects.filter(username=username)
+
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise forms.ValidationError("Username already exists!")
+
+        return username
+
+    def clean_date_of_birth(self):
+        date_of_birth = self.cleaned_data.get("date_of_birth")
+
+        if date_of_birth and date_of_birth > date.today():
+            raise forms.ValidationError("Invalid date of birth")
+
+        return date_of_birth
