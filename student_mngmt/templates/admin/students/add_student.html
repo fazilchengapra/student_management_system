@@ -1,0 +1,467 @@
+{% extends 'layouts/admin_base.html' %}
+
+{% block admin_content %}
+<style>
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+        text-decoration: none;
+        margin-bottom: 20px;
+        transition: color .15s;
+    }
+
+    .back-btn:hover {
+        color: #0ea5e9;
+    }
+
+    .back-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .page-header {
+        margin-bottom: 24px;
+    }
+
+    .page-header h2 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .page-header p {
+        font-size: 13px;
+        color: #94a3b8;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .photo-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .photo-banner {
+        height: 80px;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    }
+
+    .photo-body {
+        padding: 0 20px 24px;
+        text-align: center;
+    }
+
+    .photo-wrap {
+        margin-top: -28px;
+        margin-bottom: 14px;
+    }
+
+    .avatar-preview {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        border: 3px solid #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 600;
+        color: #fff;
+        margin: 0 auto;
+    }
+
+    .photo-hint-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 3px;
+    }
+
+    .photo-hint-sub {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-bottom: 16px;
+    }
+
+    .photo-divider {
+        height: 1px;
+        background: #f1f5f9;
+        margin-bottom: 16px;
+    }
+
+    .upload-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 16px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all .2s;
+    }
+
+    .upload-box:hover {
+        border-color: #0ea5e9;
+        background: rgba(14, 165, 233, 0.04);
+    }
+
+    .upload-box svg {
+        width: 20px;
+        height: 20px;
+        stroke: #94a3b8;
+        fill: none;
+    }
+
+    .upload-box span {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .upload-hint {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 6px;
+    }
+
+    .right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 22px 24px;
+    }
+
+    .form-card-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-card-title svg {
+        width: 15px;
+        height: 15px;
+        stroke: #0ea5e9;
+        fill: none;
+        flex-shrink: 0;
+    }
+
+    .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .field label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .opt-tag {
+        font-size: 10px;
+        color: #94a3b8;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        margin-left: 3px;
+    }
+
+    .field input,
+    .field select {
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        color: #0f172a;
+        background: #f8fafc;
+        outline: none;
+        transition: all .2s;
+        width: 100%;
+    }
+
+    .field input:focus,
+    .field select:focus {
+        border-color: #0ea5e9;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    .field input::placeholder {
+        color: #94a3b8;
+    }
+
+    .error-list {
+        list-style: none;
+        margin-top: 4px;
+    }
+
+    .error-list li {
+        font-size: 12px;
+        color: #ef4444;
+    }
+
+    .alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        margin-bottom: 16px;
+        border: 1px solid;
+    }
+
+    .alert-error {
+        background: #fef2f2;
+        color: #dc2626;
+        border-color: #fecaca;
+    }
+
+    .alert-success {
+        background: #f0fdf4;
+        color: #16a34a;
+        border-color: #bbf7d0;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-save {
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity .2s;
+    }
+
+    .btn-save:hover {
+        opacity: .9;
+    }
+
+    .btn-cancel {
+        padding: 10px 24px;
+        background: #fff;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all .15s;
+    }
+
+    .btn-cancel:hover {
+        background: #f8fafc;
+        color: #0f172a;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .field-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<a class="back-btn" href="{% url 'student_management' %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M19 12H5M12 5l-7 7 7 7" />
+    </svg>
+    Back to Students
+</a>
+
+<div class="page-header">
+    <h2>Add New Student</h2>
+    <p>Fill in the details below to create a new student account.</p>
+</div>
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-grid">
+
+        <!-- Left: Photo -->
+        <div class="photo-card">
+            <div class="photo-banner"></div>
+            <div class="photo-body">
+                <div class="photo-wrap">
+                    <div class="avatar-preview" id="avatar-preview">+</div>
+                </div>
+                <div class="photo-hint-title">Profile Photo</div>
+                <div class="photo-hint-sub">Upload a student photo</div>
+                <div class="photo-divider"></div>
+                <label class="upload-box" for="id_profile_picture">
+                    <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span id="file-label">Click to upload</span>
+                    <input type="file" id="id_profile_picture" name="profile_picture" accept="image/*"
+                        style="display:none" />
+                </label>
+                <p class="upload-hint">JPG, PNG — max 2MB</p>
+            </div>
+        </div>
+
+        <!-- Right: Fields -->
+        <div class="right-col">
+
+            <div class="form-card">
+                <div class="form-card-title">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    Personal Information
+                </div>
+                <div class="field-grid">
+                    <div class="field">
+                        <label>First Name <span class="opt-tag">optional</span></label>
+                        <input type="text" name="first_name" value="{{ form_data.first_name|default:'' }}"
+                            placeholder="John" />
+                    </div>
+                    <div class="field">
+                        <label>Last Name <span class="opt-tag">optional</span></label>
+                        <input type="text" name="last_name" value="{{ form_data.last_name|default:'' }}"
+                            placeholder="Doe" />
+                    </div>
+                    <div class="field">
+                        <label>Username</label>
+                        <input type="text" name="username" value="{{ form_data.username|default:'' }}"
+                            placeholder="johndoe" required />
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" name="email" value="{{ form_data.email|default:'' }}"
+                            placeholder="john@example.com" required />
+                    </div>
+                    <div class="field">
+                        <label>Phone <span class="opt-tag">optional</span></label>
+                        <input type="tel" name="phone" value="{{ form_data.phone|default:'' }}"
+                            placeholder="+91 00000 00000" />
+                    </div>
+                    <div class="field">
+                        <label>Date of Birth <span class="opt-tag">optional</span></label>
+                        <input type="date" name="date_of_birth" value="{{ form_data.date_of_birth|default:'' }}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                    Account Credentials
+                </div>
+                <div class="field-grid">
+                    <div class="field">
+                        <label>Password</label>
+                        <input type="password" name="password1" placeholder="••••••••" required />
+                    </div>
+                    <div class="field">
+                        <label>Confirm Password</label>
+                        <input type="password" name="password2" placeholder="••••••••" required />
+                    </div>
+                    <div class="field">
+                        <label>Status</label>
+                        <select name="is_active">
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                    </svg>
+                    Create Student
+                </button>
+                <a class="btn-cancel" href="{% url 'student_management' %}">Cancel</a>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<script>
+    document.getElementById('id_profile_picture').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        document.getElementById('file-label').textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('avatar-preview').outerHTML =
+                `<img id="avatar-preview" src="${e.target.result}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid #fff;display:block;margin:0 auto;" alt="preview"/>`;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+{% endblock %}

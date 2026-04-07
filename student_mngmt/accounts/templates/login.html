@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
+
+  .sms-page {
+    font-family: 'DM Sans', sans-serif;
+    background: #f8fafc;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(14, 165, 233, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(14, 165, 233, 0.07) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .bg-glow {
+    position: absolute;
+    width: 600px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.09) 0%, transparent 70%);
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .card {
+    position: relative;
+    z-index: 5;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .card-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: white;
+  }
+
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: #0f172a;
+    margin-bottom: 6px;
+  }
+
+  .card-sub {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 28px;
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #0f172a;
+    background: #f8fafc;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .field input:focus {
+    border-color: #0ea5e9;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
+  }
+
+  .field input::placeholder {
+    color: #94a3b8;
+  }
+
+  .forgot {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    color: #0ea5e9;
+    text-decoration: none;
+    margin-top: -10px;
+    margin-bottom: 22px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-submit:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 22px 0;
+  }
+
+  .divider hr {
+    flex: 1;
+    border: none;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .divider span {
+    font-size: 12px;
+    color: #94a3b8;
+  }
+
+  .register-link {
+    text-align: center;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .register-link a {
+    color: #0ea5e9;
+    font-weight: 500;
+    text-decoration: none;
+  }
+</style>
+
+<div class="sms-page">
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <div class="card">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
+      </svg>
+    </div>
+    <div class="card-title">Welcome back</div>
+    <div class="card-sub">Sign in to your account to continue</div>
+
+    <form method="POST" action="#">
+      {% csrf_token %}
+
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required />
+      </div>
+      <a href="#" class="forgot">Forgot password?</a>
+      <button type="submit" class="btn-submit">Sign In</button>
+    </form>
+
+    <div class="divider">
+      <hr><span>or</span>
+      <hr>
+    </div>
+    <div class="register-link">Don't have an account? <a href="/register">Register</a></div>
+  </div>
+</div>
+{% endblock %}

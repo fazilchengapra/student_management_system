@@ -1,0 +1,396 @@
+{% extends 'layouts/admin_base.html' %}
+
+{% block admin_content %}
+<style>
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+        text-decoration: none;
+        margin-bottom: 20px;
+        transition: color .15s;
+    }
+
+    .back-btn:hover {
+        color: #0ea5e9;
+    }
+
+    .back-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .profile-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .profile-banner {
+        height: 80px;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    }
+
+    .profile-body {
+        padding: 0 24px 24px;
+        text-align: center;
+    }
+
+    .avatar-wrap {
+        margin-top: -28px;
+        margin-bottom: 12px;
+    }
+
+    .avatar-circle {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        border: 3px solid #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 600;
+        color: #fff;
+        margin: 0 auto;
+    }
+
+    .avatar-img {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .profile-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 3px;
+    }
+
+    .profile-username {
+        font-size: 13px;
+        color: #94a3b8;
+        margin-bottom: 12px;
+    }
+
+    .status-pill {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 16px;
+    }
+
+    .pill-active {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .pill-inactive {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .profile-divider {
+        height: 1px;
+        background: #f1f5f9;
+        margin-bottom: 16px;
+    }
+
+    .mini-stat {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .mini-stat-num {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0f172a;
+        text-align: center;
+    }
+
+    .mini-stat-label {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 2px;
+        text-align: center;
+    }
+
+    .right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .action-bar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-edit {
+        padding: 9px 20px;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity .2s;
+    }
+
+    .btn-edit:hover {
+        opacity: .9;
+        color: #fff;
+    }
+
+    .btn-deact {
+        padding: 9px 20px;
+        background: #fff;
+        color: #f59e0b;
+        border: 1px solid #fde68a;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .15s;
+    }
+
+    .btn-deact:hover {
+        background: #fffbeb;
+        color: #f59e0b;
+    }
+
+    .btn-delete {
+        padding: 9px 20px;
+        background: #fff;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .15s;
+    }
+
+    .btn-delete:hover {
+        background: #fef2f2;
+        color: #ef4444;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 22px 24px;
+    }
+
+    .info-card-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-card-title svg {
+        width: 15px;
+        height: 15px;
+        stroke: #0ea5e9;
+        fill: none;
+        flex-shrink: 0;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .info-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 14px;
+        font-weight: 500;
+        color: #0f172a;
+    }
+
+    .info-value.muted {
+        color: #94a3b8;
+        font-weight: 400;
+    }
+
+    .status-active {
+        color: #16a34a;
+    }
+
+    .status-inactive {
+        color: #dc2626;
+    }
+
+    @media (max-width: 768px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<a class="back-btn" href="{% url 'student_mgmt' %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M19 12H5M12 5l-7 7 7 7" />
+    </svg>
+    Back to Students
+</a>
+
+<div class="detail-grid">
+
+    <!-- Left: Profile Card -->
+    <div class="profile-card">
+        <div class="profile-banner"></div>
+        <div class="profile-body">
+            <div class="avatar-wrap">
+                {% if student.profile_picture %}
+                <img class="avatar-img" src="{{ student.profile_picture.url }}" alt="{{ student.username }}" />
+                {% else %}
+                <div class="avatar-circle">{{ student.username|first|upper }}</div>
+                {% endif %}
+            </div>
+            <div class="profile-name">{{ student.get_full_name|default:student.username }}</div>
+            <div class="profile-username">@{{ student.username }}</div>
+            {% if student.is_active %}
+            <span class="status-pill pill-active">Active</span>
+            {% else %}
+            <span class="status-pill pill-inactive">Inactive</span>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Right: Details -->
+    <div class="right-col">
+
+        <div class="action-bar">
+            <a class="btn-edit" href="{% url 'edit_student_admin' student.id %}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                Edit Student
+            </a>
+            <a class="btn-deact" href="{% url 'toggle_student' student.id %}">
+                {% if student.is_active %}Deactivate{% else %}Activate{% endif %}
+            </a>
+            <form action="{% url 'delete_student' student.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+
+                <button type="submit" class="btn-delete"
+                    onclick="return confirm('Are you sure you want to delete {{ student.username }}?')">
+                    Delete
+                </button>
+            </form>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-title">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+                Personal Information
+            </div>
+            <div class="info-grid">
+
+                <div>
+                    <div class="info-label">Username</div>
+                    <div class="info-value">@{{ student.username }}</div>
+                </div>
+                <div>
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ student.email|default:"—" }}</div>
+                </div>
+                <div>
+                    <div class="info-label">Phone</div>
+                    <div class="info-value">{{ student.phone|default:"—" }}</div>
+                </div>
+                <div>
+                    <div class="info-label">Date of Birth</div>
+                    <div class="info-value">{{ student.date_of_birth|date:"d M Y"|default:"—" }}</div>
+                </div>
+                <div>
+                    <div class="info-label">Date Joined</div>
+                    <div class="info-value">{{ student.date_of_join|date:"d M Y" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-title">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                </svg>
+                Account Details
+            </div>
+            <div class="info-grid">
+                <div>
+                    <div class="info-label">Student ID</div>
+                    <div class="info-value">#STU-{{ student.id|stringformat:"04d" }}</div>
+                </div>
+                <div class="info-value {% if student.is_active %}status-active{% else %}status-inactive{% endif %}">
+                    {% if student.is_active %}Active{% else %}Inactive{% endif %}
+                </div>
+                <div>
+                    <div class="info-label">Staff Access</div>
+                    <div class="info-value muted">{% if student.is_staff %}Yes{% else %}No{% endif %}</div>
+                </div>
+                <div>
+                    <div class="info-label">Superuser</div>
+                    <div class="info-value muted">{% if student.is_superuser %}Yes{% else %}No{% endif %}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

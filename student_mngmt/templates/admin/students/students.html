@@ -1,0 +1,292 @@
+{% extends 'layouts/admin_base.html' %}
+
+{% block admin_content %}
+<style>
+    .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .top-bar h2 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .top-right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-box {
+        padding: 8px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        color: #0f172a;
+        background: #fff;
+        outline: none;
+        width: 200px;
+    }
+
+    .search-box:focus {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    .btn-add {
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .table-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #f8fafc;
+    }
+
+    th {
+        padding: 12px 16px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    td {
+        padding: 13px 16px;
+        font-size: 13px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover td {
+        background: #f8fafc;
+    }
+
+    .avatar-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .user-name {
+        font-weight: 500;
+        color: #0f172a;
+    }
+
+    .user-email {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-top: 1px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .badge-active {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .badge-inactive {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 6px;
+    }
+
+    .btn-view {
+        padding: 5px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        color: #475569;
+        text-decoration: none;
+        display: inline-block;
+        transition: all .15s;
+    }
+
+    .btn-view:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    .btn-del {
+        padding: 5px 12px;
+        border: 1px solid #fee2e2;
+        border-radius: 6px;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        color: #ef4444;
+        text-decoration: none;
+        display: inline-block;
+        transition: all .15s;
+    }
+
+    .btn-del:hover {
+        background: #fef2f2;
+    }
+
+    .table-footer {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+
+    .footer-info {
+        font-size: 12px;
+        color: #94a3b8;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 48px 16px;
+        color: #94a3b8;
+        font-size: 14px;
+    }
+</style>
+
+<div class="top-bar">
+    <h2>Student Management</h2>
+    <div class="top-right">
+        <form method="GET" action="">
+            <input class="search-box" type="text" name="q" placeholder="Search students..."
+                value="{{ request.GET.q }}" />
+        </form>
+        <a href="#{ url 'add_student' %}" class="btn-add">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Student
+        </a>
+    </div>
+</div>
+
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Student</th>
+                <th>Phone</th>
+                <th>Date of Birth</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    <div class="avatar-cell">
+                        {% if student.profile_picture %}
+                        <img src="{{ student.profile_picture.url }}"
+                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;" alt="" />
+                        {% else %}
+                        <div class="avatar">{{ student.username|first|upper }}</div>
+                        {% endif %}
+                        <div>
+                            <div class="user-name">{{ student.get_full_name|default:student.username }}</div>
+                            <div class="user-email">{{ student.email }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ student.phone|default:"—" }}</td>
+                <td>{{ student.date_of_birth|date:"d M Y"|default:"—" }}</td>
+                <td>{{ student.date_of_join|date:"d M Y" }}</td>
+                <td>
+                    {% if student.is_active %}
+                    <span class="badge badge-active">Active</span>
+                    {% else %}
+                    <span class="badge badge-inactive">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-btns">
+                        <a href="{% url 'view_student' student.id %}" class="btn-view">View</a>
+                        <a href="{% url 'delete_student' student.id %}" class="btn-del"
+                            onclick="return confirm('Delete {{ student.username }}?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">
+                    <div class="empty-state">No students found.</div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="table-footer">
+        <span class="footer-info">Showing {{ students|length }} student{{ students|length|pluralize }}</span>
+        <span class="footer-info">Total: {{ students|length }}</span>
+    </div>
+</div>
+{% endblock %}
