@@ -123,7 +123,7 @@ def my_courses_view(req):
 
     if status_filter:
         enrollments = enrollments.filter(status=status_filter)
-        
+
     all_enrollments = Enrollment.objects.filter(student=req.user)
 
     total = all_enrollments.count()
@@ -140,3 +140,53 @@ def my_courses_view(req):
     }
 
     return render(req, "student/course/my_courses.html", context)
+
+
+@login_required
+def explore_courses(req):
+    if req.user.is_staff:
+        return redirect("admin")
+
+    enrolled_ids = Enrollment.objects.filter(student=req.user).values_list(
+        "course", flat=True
+    )
+    available_courses = Course.objects.exclude(id__in=enrolled_ids)
+
+    context = {"available_courses": available_courses}
+
+    return render(req, "student/course/explore_courses.html", context)
+
+
+@login_required
+def enroll_course(req, courseId):
+    if req.user.is_staff:
+        return redirect("admin")
+
+    course = get_object_or_404(Course, id=courseId)
+    student = req.user
+
+    is_already_enrolled = Enrollment.objects.filter(
+        student=student, course=course
+    ).exists()
+
+    if is_already_enrolled:
+        messages.warning(req, f"the {course.title} is already enrolled!")
+
+    else:
+        Enrollment.objects.create(student=student, course=course)
+        messages.success(req, "Enrollment request sent to admin!")
+
+    return redirect("my_courses")
+
+
+@login_required
+def student_view_course(req, courseId):
+    if req.user.is_staff:
+        return redirect("admin")
+    student = req.user
+    course = get_object_or_404(Course, id=courseId)
+    enrollment = get_object_or_404(Enrollment, student=student, course=course)
+
+    context = {"course": course, "enrollment": enrollment}
+
+    return render(req, "student/course/view_course.html", context)

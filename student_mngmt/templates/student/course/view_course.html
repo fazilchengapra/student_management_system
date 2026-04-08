@@ -1,0 +1,346 @@
+{% extends 'layouts/student_base.html' %} {% block content_student %}
+<style>
+    /* Base styling from your original template */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+        text-decoration: none;
+        margin-bottom: 20px;
+        transition: color .15s;
+    }
+
+    .back-btn:hover {
+        color: #0ea5e9;
+    }
+
+    .back-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .profile-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .profile-banner {
+        height: 80px;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    }
+
+    .profile-body {
+        padding: 0 24px 24px;
+        text-align: center;
+    }
+
+    .course-img-wrap {
+        margin-top: -40px;
+        margin-bottom: 16px;
+    }
+
+    .course-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        border: 4px solid #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 600;
+        color: #fff;
+        margin: 0 auto;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    .course-img {
+        width: 90px;
+        height: 90px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 4px solid #fff;
+        display: block;
+        margin: 0 auto;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    .profile-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 6px;
+        line-height: 1.3;
+    }
+
+    /* Status Pills */
+    .status-pill {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .status-enrolled { background: #e0f2fe; color: #0284c7; }
+    .status-in_progress { background: #fef3c7; color: #d97706; }
+    .status-completed { background: #dcfce7; color: #16a34a; }
+    .status-dropped { background: #fee2e2; color: #dc2626; }
+    .status-pending { background: #f1f5f9; color: #475569; }
+
+    .right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .action-bar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: #fff;
+        padding: 16px 24px;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        align-items: center;
+    }
+
+    /* New Student Action Buttons */
+    .btn-action {
+        padding: 9px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all .2s;
+        cursor: pointer;
+    }
+
+    .btn-start {
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        color: #fff;
+    }
+    .btn-start:hover { opacity: .9; color: #fff; }
+
+    .btn-complete {
+        background: #16a34a;
+        color: #fff;
+    }
+    .btn-complete:hover { background: #15803d; color: #fff; }
+
+    .btn-drop {
+        background: #fff;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+    }
+    .btn-drop:hover { background: #fef2f2; color: #ef4444; }
+
+    .btn-video {
+        background: #4f46e5;
+        color: #fff;
+    }
+    .btn-video:hover { background: #4338ca; color: #fff; }
+
+    .action-message {
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 22px 24px;
+    }
+
+    .info-card-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-card-title svg {
+        width: 15px;
+        height: 15px;
+        stroke: #0ea5e9;
+        fill: none;
+        flex-shrink: 0;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .info-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 14px;
+        font-weight: 500;
+        color: #0f172a;
+    }
+
+    .course-desc {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #475569;
+    }
+
+    @media (max-width: 768px) {
+        .detail-grid { grid-template-columns: 1fr; }
+        .info-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<a class="back-btn" href="{% url 'my_courses' %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 5l-7 7 7 7" />
+    </svg>
+    Back to My Courses
+</a>
+
+<div class="detail-grid">
+
+    <div class="profile-card">
+        <div class="profile-banner"></div>
+        <div class="profile-body">
+            <div class="course-img-wrap">
+                {% if course.course_url %}
+                <img class="course-img" src="{{ course.course_url.url }}" alt="{{ course.title }}" />
+                {% else %}
+                <div class="course-placeholder">{{ course.title|first|upper }}</div>
+                {% endif %}
+            </div>
+            <div class="profile-name">{{ course.title }}</div>
+            
+            <span class="status-pill status-{{ enrollment.status }}">
+                {{ enrollment.get_status_display }}
+            </span>
+            
+            <div style="font-size: 13px; color: #64748b; margin-top: 8px;">
+                Duration: {{ course.duration }}
+            </div>
+        </div>
+    </div>
+
+    <div class="right-col">
+
+        <div class="action-bar">
+            
+            {% if enrollment.status == 'enrolled' %}
+                <form action="#{ url 'update_course_status' course.id 'in_progress' %}" method="POST" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action btn-start">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Start Course
+                    </button>
+                </form>
+                <span class="action-message" style="margin-left: 10px;">Ready to begin learning?</span>
+
+            {% elif enrollment.status == 'in_progress' %}
+                {% if course.video_link %}
+                <a href="{{ course.video_link }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-video">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                        <line x1="7" y1="2" x2="7" y2="22"></line>
+                        <line x1="17" y1="2" x2="17" y2="22"></line>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <line x1="2" y1="7" x2="7" y2="7"></line>
+                        <line x1="2" y1="17" x2="7" y2="17"></line>
+                        <line x1="17" y1="17" x2="22" y2="17"></line>
+                        <line x1="17" y1="7" x2="22" y2="7"></line>
+                    </svg>
+                    Watch Video
+                </a>
+                {% endif %}
+
+                <form action="#{ url 'update_course_status' course.id 'completed' %}" method="POST" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action btn-complete">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        Mark as Complete
+                    </button>
+                </form>
+
+                <form action="#{ url 'update_course_status' course.id 'dropped' %}" method="POST" style="margin: 0; margin-left: auto;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action btn-drop" onclick="return confirm('Are you sure you want to drop {{ course.title }}? All progress will be lost.')">
+                        Drop Course
+                    </button>
+                </form>
+
+            {% elif enrollment.status == 'completed' %}
+                <span class="action-message">
+                    🎉 Congratulations! You have successfully completed this course.
+                </span>
+                
+            {% elif enrollment.status == 'dropped' %}
+                <span class="action-message">
+                    You have dropped this course.
+                </span>
+            {% else %}
+                <span class="action-message">
+                    Course enrollment is currently pending approval.
+                </span>
+            {% endif %}
+
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-title">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="21" y1="10" x2="3" y2="10" />
+                    <line x1="21" y1="6" x2="3" y2="6" />
+                    <line x1="21" y1="14" x2="3" y2="14" />
+                    <line x1="14" y1="18" x2="3" y2="18" />
+                </svg>
+                Course Description
+            </div>
+            <div class="course-desc">
+                {{ course.description|linebreaksbr|default:"No description provided." }}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

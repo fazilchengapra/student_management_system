@@ -317,11 +317,9 @@
             </div>
 
             <div class="card-footer">
-                <a class="btn-view" href="{% url 'view_course' enrollment.course.id %}">
-                    {% if enrollment.status == 'in_progress' %}Continue course
-                    {% elif enrollment.status == 'completed' %}View course
-                    {% elif enrollment.status == 'enrolled' %}Start course
-                    {% else %}View details{% endif %}
+                <a class="btn-view" href="{% url 'view_course_student' enrollment.course.id %}">
+
+                    View course
                 </a>
             </div>
 

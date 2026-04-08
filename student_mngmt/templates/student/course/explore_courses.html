@@ -1,0 +1,196 @@
+{% extends 'layouts/student_base.html' %} {% block content_student %}
+<style>
+    .page-header {
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+    }
+
+    .course-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .course-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-thumbnail {
+        height: 160px;
+        background: #f1f5f9;
+        position: relative;
+    }
+
+    .course-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .course-thumbnail-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .course-duration {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: rgba(15, 23, 42, 0.75);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        backdrop-filter: blur(4px);
+    }
+
+    .course-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .course-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+    .course-desc {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        /* Truncate text after 3 lines */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .course-footer {
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-enroll {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: opacity .2s;
+        box-sizing: border-box;
+    }
+
+    .btn-enroll:hover {
+        opacity: .9;
+        color: #fff;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        background: #fff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 14px;
+    }
+
+    .empty-state-icon {
+        width: 48px;
+        height: 48px;
+        color: #94a3b8;
+        margin-bottom: 16px;
+    }
+
+    .empty-state-text {
+        font-size: 15px;
+        color: #475569;
+        font-weight: 500;
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">Explore Courses</h1>
+    <p class="page-subtitle">Discover and enroll in new courses to expand your skills.</p>
+</div>
+
+<div class="course-grid">
+    {% for course in available_courses %}
+    <div class="course-card">
+        <div class="course-thumbnail">
+            {% if course.course_url %}
+                <img src="{{ course.course_url.url }}" alt="{{ course.title }}">
+            {% else %}
+                <div class="course-thumbnail-placeholder">{{ course.title|first|upper }}</div>
+            {% endif %}
+            
+            {% if course.duration %}
+                <span class="course-duration">{{ course.duration }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="course-body">
+            <h3 class="course-title">{{ course.title }}</h3>
+            <div class="course-desc">
+                {{ course.description|truncatechars:120 }}
+            </div>
+            
+            <div class="course-footer">
+                <a href="{% url 'enroll_course' course.id %}" class="btn-enroll">Request to Enroll</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <p class="empty-state-text">You are already enrolled in all available courses!</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

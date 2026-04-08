@@ -32,7 +32,7 @@ class Enrollment(models.Model):
     DROPPED = "dropped"
 
     STATUS_CHOICES = (
-        (ENROLLED, "Not Started"),
+        (ENROLLED, "Enrolled"),
         (IN_PROGRESS, "In Progress"),
         (PENDING, "Pending"),
         (COMPLETED, "Completed"),

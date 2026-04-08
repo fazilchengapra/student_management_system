@@ -407,6 +407,16 @@
         My Courses
     </a>
 
+    <a href="{% url 'explore_courses' %}"
+        class="nav-link-item {% if request.resolver_match.url_name == 'explore_courses' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+        </svg>
+        Explore Courses
+    </a>
+
     <a href="{% url 'my_profile' %}"
         class="nav-link-item {% if request.resolver_match.url_name == 'my_profile' %}active{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
