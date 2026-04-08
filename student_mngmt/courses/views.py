@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
-from .forms import CourseForm
+from .forms import CourseForm, CourseEditForm
 from .models import Course, Enrollment
 
 # Create your views here.
@@ -50,6 +50,28 @@ def view_course(req, courseId):
     course = Course.objects.get(id=courseId)
     return render(req, "admin/course/course_view.html", {"course": course})
 
+# edit course details, only can edit admins
+@login_required
+def edit_course(req, courseId):
+    if not req.user.is_staff:
+        return redirect("login")
+    
+    course = get_object_or_404(Course, id=courseId)
+    
+    if req.method == 'POST':
+        form = CourseEditForm(req.POST, req.FILES, instance=course)
+        
+        if form.is_valid():
+            form.save()
+            return redirect('course_list')
+    
+    form = CourseEditForm(instance=course)
+    
+    context = {
+        'course':course,
+        'form':form
+    }
+    return render(req, "admin/course/edit_course.html", context)
 
 # admin view
 @login_required

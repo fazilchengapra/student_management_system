@@ -19,3 +19,23 @@ class CourseForm(forms.ModelForm):
             "video_link": forms.URLInput(attrs={"class": "form-input","placeholder":'Past a video link'}),
             "duration": forms.TextInput(attrs={"class": "form-input","placeholder":'eg. 2hours'}),
         }
+
+class CourseEditForm(forms.ModelForm):
+    
+    class Meta:
+        model = Course
+        fields = [
+            'title',
+            'course_url',
+            'description',
+            'video_link',
+            'duration'
+        ]
+        
+        widgets = {
+            'title': forms.TextInput(attrs={'class':'form-control'}),
+            'course_url': forms.FileInput(attrs={'class':'form-control'}),
+            'description': forms.Textarea(attrs={'class':'form-control'}),
+            'video_link': forms.URLInput(attrs={'class':'form-control'}),
+            'duration': forms.TextInput(attrs={'class':'form-control'})
+        }
