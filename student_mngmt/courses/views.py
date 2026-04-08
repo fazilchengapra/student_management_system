@@ -51,43 +51,43 @@ def view_course(req, courseId):
     course = Course.objects.get(id=courseId)
     return render(req, "admin/course/course_view.html", {"course": course})
 
+
 # edit course details, only can edit admins
 @login_required
 def edit_course(req, courseId):
     if not req.user.is_staff:
         return redirect("login")
-    
+
     course = get_object_or_404(Course, id=courseId)
-    
-    if req.method == 'POST':
+
+    if req.method == "POST":
         form = CourseEditForm(req.POST, req.FILES, instance=course)
-        
+
         if form.is_valid():
             form.save()
-            return redirect('course_list')
-    
+            return redirect("course_list")
+
     form = CourseEditForm(instance=course)
-    
-    context = {
-        'course':course,
-        'form':form
-    }
+
+    context = {"course": course, "form": form}
     return render(req, "admin/course/edit_course.html", context)
 
+
 # course deletion -> only admins can do this
-@login_required # it's a function that check session id is have the requester
+@login_required  # it's a function that check session id is have the requester
 def delete_course(req, courseId):
     if not req.user.is_staff:
-        return redirect('login')
-    
-    if req.method == 'POST':
+        return redirect("login")
+
+    if req.method == "POST":
         course = get_object_or_404(Course, id=courseId)
         course.delete()
-        messages.success(req, 'course deleted success!')
-        return redirect('course_list')
-    messages.error(req, 'something went wrong!')
-    return redirect('view_course', courseId)
-    
+        messages.success(req, "course deleted success!")
+        return redirect("course_list")
+    messages.error(req, "something went wrong!")
+    return redirect("view_course", courseId)
+
+
 # admin view
 @login_required
 def enrollments_view(req):
@@ -109,3 +109,34 @@ def enrollments_view(req):
             "total_enrollments": total,
         },
     )
+
+
+# student course view -> (student my courses section)
+@login_required
+def my_courses_view(req):
+    if req.user.is_staff:
+        return redirect("admin")
+
+    enrollments = Enrollment.objects.filter(student=req.user)
+
+    status_filter = req.GET.get("status")
+
+    if status_filter:
+        enrollments = enrollments.filter(status=status_filter)
+        
+    all_enrollments = Enrollment.objects.filter(student=req.user)
+
+    total = all_enrollments.count()
+    in_progress = enrollments.filter(status=Enrollment.IN_PROGRESS).count
+    completed = enrollments.filter(status=Enrollment.COMPLETED).count
+    pending = enrollments.filter(status=Enrollment.PENDING).count()
+
+    context = {
+        "enrollments": enrollments,
+        "total": total,
+        "in_progress_count": in_progress,
+        "completed_count": completed,
+        "pending_count": pending,
+    }
+
+    return render(req, "student/course/my_courses.html", context)

@@ -397,7 +397,7 @@
         Dashboard
     </a>
 
-    <a href="#{url 'my_courses' t}"
+    <a href="{% url 'my_courses' %}"
         class="nav-link-item {% if request.resolver_match.url_name == 'my_courses' %}active{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
