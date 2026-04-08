@@ -1,0 +1,143 @@
+{% extends 'layouts/admin_base.html' %}
+
+{% block admin_content %}
+<style>
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .top-bar h2 { font-size: 18px; font-weight: 600; color: #0f172a; }
+  .top-right { display: flex; gap: 10px; align-items: center; }
+  .search-box { padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #0f172a; background: #fff; outline: none; width: 200px; }
+  .search-box:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
+  .btn-add { padding: 8px 16px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: #fff; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+  .btn-add svg { width: 14px; height: 14px; stroke: #fff; fill: none; }
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; }
+  .stat-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stat-icon svg { width: 18px; height: 18px; fill: none; }
+  .ic-blue { background: #e0f2fe; } .ic-blue svg { stroke: #0284c7; }
+  .ic-green { background: #dcfce7; } .ic-green svg { stroke: #16a34a; }
+  .ic-amber { background: #fef9c3; } .ic-amber svg { stroke: #b45309; }
+  .stat-num { font-size: 20px; font-weight: 600; color: #0f172a; }
+  .stat-label { font-size: 12px; color: #94a3b8; margin-top: 1px; }
+  .table-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: #f8fafc; }
+  th { padding: 11px 16px; font-size: 11px; font-weight: 600; color: #64748b; text-align: left; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid #e2e8f0; }
+  td { padding: 13px 16px; font-size: 13px; color: #334155; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  .course-cell { display: flex; align-items: center; gap: 10px; }
+  .course-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+  .no-thumb { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .no-thumb svg { width: 18px; height: 18px; fill: #fff; }
+  .course-title { font-weight: 500; color: #0f172a; font-size: 13px; }
+  .course-desc { font-size: 11px; color: #94a3b8; margin-top: 1px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .duration-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; background: #f1f5f9; border-radius: 100px; font-size: 12px; color: #475569; font-weight: 500; }
+  .duration-pill svg { width: 12px; height: 12px; stroke: #94a3b8; fill: none; }
+  .enroll-count { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; color: #0f172a; }
+  .enroll-count svg { width: 13px; height: 13px; stroke: #0ea5e9; fill: none; }
+  .action-btns { display: flex; gap: 6px; }
+  .btn-view { padding: 5px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 500; color: #475569; text-decoration: none; display: inline-block; transition: all .15s; }
+  .btn-view:hover { background: #f1f5f9; color: #0f172a; }
+  .btn-del { padding: 5px 12px; border: 1px solid #fee2e2; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 500; color: #ef4444; text-decoration: none; display: inline-block; transition: all .15s; }
+  .btn-del:hover { background: #fef2f2; }
+  .table-footer { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #e2e8f0; background: #f8fafc; }
+  .footer-info { font-size: 12px; color: #94a3b8; }
+  .empty-state { text-align: center; padding: 48px 16px; color: #94a3b8; font-size: 14px; }
+</style>
+
+<div class="top-bar">
+  <h2>Course Management</h2>
+  <div class="top-right">
+    <form method="GET">
+      <input class="search-box" type="text" name="q" placeholder="Search courses..." value="{{ request.GET.q }}"/>
+    </form>
+    <a class="btn-add" href="#{ url 'add_course' %}">
+      <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Course
+    </a>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-icon ic-blue">
+      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </div>
+    <div><div class="stat-num">{{ total_courses }}</div><div class="stat-label">Total Courses</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon ic-green">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div><div class="stat-num">{{ total_enrollments }}</div><div class="stat-label">Total Enrollments</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon ic-amber">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div><div class="stat-num">{{ courses|length }}</div><div class="stat-label">Showing Results</div></div>
+  </div>
+</div>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Course</th>
+        <th>Duration</th>
+        <th>Enrollments</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for course in courses %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+          <div class="course-cell">
+            {% if course.course_url %}
+              <img class="course-thumb" src="{{ course.course_url.url }}" alt="{{ course.title }}"/>
+            {% else %}
+              <div class="no-thumb">
+                <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              </div>
+            {% endif %}
+            <div>
+              <div class="course-title">{{ course.title }}</div>
+              <div class="course-desc">{{ course.description|truncatechars:60 }}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="duration-pill">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            {{ course.duration }}
+          </span>
+        </td>
+        <td>
+          <span class="enroll-count">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            {{ course.enrollments.count }}
+          </span>
+        </td>
+        <td>{{ course.created_at|date:"d M Y" }}</td>
+        <td>
+          <div class="action-btns">
+            <a class="btn-view" href="#{ url 'view_course' course.id %}">View</a>
+            <a class="btn-del" href="#{ url 'delete_course' course.id %}"
+               onclick="return confirm('Delete {{ course.title }}?')">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6"><div class="empty-state">No courses found.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="table-footer">
+    <span class="footer-info">Showing {{ courses|length }} of {{ total_courses }} courses</span>
+  </div>
+</div>
+{% endblock %}

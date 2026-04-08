@@ -219,8 +219,8 @@
         Student Management
     </a>
 
-    <a href="#{ url 'course_management' }"
-        class="nav-item {% if request.resolver_match.url_name == 'course_management' %}active{% endif %}">
+    <a href="{% url 'course_list' %}"
+        class="nav-item {% if request.resolver_match.url_name == 'course_list' %}active{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
