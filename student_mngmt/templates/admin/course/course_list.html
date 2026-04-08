@@ -51,7 +51,7 @@
     <form method="GET">
       <input class="search-box" type="text" name="q" placeholder="Search courses..." value="{{ request.GET.q }}"/>
     </form>
-    <a class="btn-add" href="#{ url 'add_course' %}">
+    <a class="btn-add" href="{% url 'add_course' %}">
       <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add Course
     </a>
@@ -125,7 +125,7 @@
         <td>{{ course.created_at|date:"d M Y" }}</td>
         <td>
           <div class="action-btns">
-            <a class="btn-view" href="#{ url 'view_course' course.id %}">View</a>
+            <a class="btn-view" href="{% url 'view_course' course.id %}">View</a>
             <a class="btn-del" href="#{ url 'delete_course' course.id %}"
                onclick="return confirm('Delete {{ course.title }}?')">Delete</a>
           </div>

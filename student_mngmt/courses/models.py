@@ -19,6 +19,9 @@ class Course(models.Model):
     duration = models.CharField(max_length=50)
 
     created_at = models.DateField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.title
 
 
 class Enrollment(models.Model):
@@ -48,7 +51,7 @@ class Enrollment(models.Model):
     )
 
     status = models.CharField(
-        max_length=50, choices=STATUS_CHOICES, default=ENROLLED, db_index=True
+        max_length=50, choices=STATUS_CHOICES, default=PENDING, db_index=True
     )
 
     enrolled_at = models.DateField(auto_now_add=True)

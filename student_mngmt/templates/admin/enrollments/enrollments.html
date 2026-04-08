@@ -1,0 +1,406 @@
+{% extends 'layouts/admin_base.html' %}
+{% block admin_content %}
+<style>
+  /* paste all the same CSS from the mockup above */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .top-bar h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .search-box {
+    padding: 8px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #0f172a;
+    background: #fff;
+    outline: none;
+    width: 200px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .stat-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ic-blue {
+    background: #e0f2fe;
+  }
+
+  .ic-blue svg {
+    stroke: #0284c7;
+  }
+
+  .ic-amber {
+    background: #fef9c3;
+  }
+
+  .ic-amber svg {
+    stroke: #b45309;
+  }
+
+  .ic-green {
+    background: #dcfce7;
+  }
+
+  .ic-green svg {
+    stroke: #16a34a;
+  }
+
+  .stat-num {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 1px;
+  }
+
+  .table-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: #f8fafc;
+  }
+
+  th {
+    padding: 11px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  td {
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: #f8fafc;
+  }
+
+  .student-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .avatar-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .avatar-init {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e0f2fe;
+    color: #0284c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .student-name {
+    font-weight: 500;
+    font-size: 13px;
+    color: #0f172a;
+  }
+
+  .id-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    font-family: monospace;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* ENROLLED */
+  .badge-enrolled {
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+
+  /* IN PROGRESS */
+  .badge-in_progress {
+    background: #ede9fe;
+    color: #7c3aed;
+  }
+
+  /* PENDING (already exists but improved naming consistency) */
+  .badge-pending {
+    background: #fef9c3;
+    color: #b45309;
+  }
+
+  /* COMPLETED */
+  .badge-completed {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  /* DROPPED */
+  .badge-dropped {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  .action-btns {
+    display: flex;
+    gap: 5px;
+  }
+
+  .btn-action {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: all .15s;
+  }
+
+  .btn-view {
+    background: #fff;
+    border-color: #e2e8f0;
+    color: #475569;
+  }
+
+  .btn-view:hover {
+    background: #f1f5f9;
+  }
+
+  .btn-approve {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #16a34a;
+  }
+
+  .btn-approve:hover {
+    background: #dcfce7;
+  }
+
+  .btn-reject {
+    background: #fff5f5;
+    border-color: #fecaca;
+    color: #ef4444;
+  }
+
+  .btn-reject:hover {
+    background: #fee2e2;
+  }
+
+  .table-footer {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+  }
+
+  .footer-info {
+    font-size: 12px;
+    color: #94a3b8;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 16px;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+</style>
+
+<div class="top-bar">
+  <h2>Enrollment Management</h2>
+  <form method="GET">
+    <input class="search-box" type="text" name="q" placeholder="Search students..." value="{{ request.GET.q }}" />
+  </form>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-icon ic-blue">
+      <svg viewBox="0 0 24 24">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    </div>
+    <div>
+      <div class="stat-num">{{ total_enrollments }}</div>
+      <div class="stat-label">Total Enrollments</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon ic-amber">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    </div>
+    <div>
+      <div class="stat-num">{{ pending_count }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon ic-green">
+      <svg viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    </div>
+    <div>
+      <div class="stat-num">{{ approved_count }}</div>
+      <div class="stat-label">Approved</div>
+    </div>
+  </div>
+</div>
+
+<div class="table-card">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Student</th>
+        <th>ID</th>
+        <th>Course</th>
+        <th>Applied</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for enrollment in enrollments %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+          <div class="student-cell">
+            {% if enrollment.student.profile_image %}
+            <img class="avatar-img" src="{{ enrollment.student.profile_image.url }}"
+              alt="{{ enrollment.student.get_full_name }}" />
+            {% else %}
+            <div class="avatar-init">{{ enrollment.student.first_name.0 }}{{ enrollment.student.last_name.0 }}</div>
+            {% endif %}
+            <span class="student-name">{{ enrollment.student.get_full_name }}</span>
+          </div>
+        </td>
+        <td><span class="id-pill">STU-{{ enrollment.student.id|stringformat:"03d" }}</span></td>
+        <td>{{ enrollment.course.title }}</td>
+        <td>{{ enrollment.enrolled_at|date:"d M Y" }}</td>
+        <td>
+          <span class="badge badge-{{ enrollment.status }}">
+            {{ enrollment.status|capfirst }}
+          </span>
+        </td>
+        <td>
+          <div class="action-btns">
+            <a class="btn-action btn-view" href="#{ url 'view_enrollment' enrollment.id %}">View</a>
+            {% if enrollment.status == 'pending'%}
+            <a class="btn-action btn-approve" href="#{ url 'approve_enrollment' enrollment.id %}">Approve</a>
+            <a class="btn-action btn-reject" href="#{ url 'reject_enrollment' enrollment.id %}"
+              onclick="return confirm('Reject this enrollment?')">Reject</a>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7">
+          <div class="empty-state">No enrollments found.</div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="table-footer">
+    <span class="footer-info">Showing {{ enrollments|length }} of {{ total_enrollments }} enrollments</span>
+  </div>
+</div>
+{% endblock %}

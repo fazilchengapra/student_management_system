@@ -1,0 +1,179 @@
+{% extends 'layouts/admin_base.html' %}
+
+{% block admin_content %}
+<style>
+  .back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #64748b; text-decoration: none; margin-bottom: 20px; transition: color .15s; }
+  .back-btn:hover { color: #0ea5e9; }
+  .back-btn svg { width: 15px; height: 15px; }
+  .page-header { margin-bottom: 22px; }
+  .page-header h2 { font-size: 18px; font-weight: 600; color: #0f172a; margin-bottom: 4px; }
+  .page-header p { font-size: 13px; color: #94a3b8; }
+  .form-grid { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
+  /* Left image card */
+  .image-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+  .image-banner { height: 80px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+  .image-body { padding: 0 20px 24px; text-align: center; }
+  .image-preview-wrap { margin-top: -28px; margin-bottom: 14px; }
+  .image-preview-box { width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); border: 3px solid #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+  .image-preview-box svg { width: 24px; height: 24px; fill: #fff; }
+  .preview-actual { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 3px solid #fff; display: block; margin: 0 auto; }
+  .image-card-title { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 3px; }
+  .image-card-sub { font-size: 12px; color: #94a3b8; margin-bottom: 16px; }
+  .image-divider { height: 1px; background: #f1f5f9; margin-bottom: 16px; }
+  .upload-box { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px; border: 1px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; cursor: pointer; transition: all .2s; }
+  .upload-box:hover { border-color: #0ea5e9; background: rgba(14,165,233,0.04); }
+  .upload-box svg { width: 20px; height: 20px; stroke: #94a3b8; fill: none; }
+  .upload-box span { font-size: 12px; color: #64748b; }
+  .upload-hint { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+  /* Right */
+  .right-col { display: flex; flex-direction: column; gap: 16px; }
+  .form-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px 24px; }
+  .form-card-title { font-size: 12px; font-weight: 600; color: #0f172a; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 18px; display: flex; align-items: center; gap: 7px; }
+  .form-card-title svg { width: 14px; height: 14px; stroke: #0ea5e9; fill: none; flex-shrink: 0; }
+  .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 12px; font-weight: 500; color: #374151; text-transform: uppercase; letter-spacing: .04em; }
+  .opt-tag { font-size: 10px; color: #94a3b8; font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 3px; }
+  .field input, .field textarea { padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #0f172a; background: #f8fafc; outline: none; transition: all .2s; width: 100%; }
+  .field input:focus, .field textarea:focus { border-color: #0ea5e9; background: #fff; box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
+  .field input::placeholder, .field textarea::placeholder { color: #94a3b8; }
+  .field textarea { min-height: 100px; resize: vertical; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .url-wrap { position: relative; }
+  .url-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; stroke: #94a3b8; fill: none; pointer-events: none; }
+  .url-wrap input { padding-left: 36px; }
+  .error-msg { font-size: 12px; color: #ef4444; margin-top: 3px; }
+  .alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+  .alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  .form-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-save { padding: 10px 24px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: #fff; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: opacity .2s; }
+  .btn-save:hover { opacity: .9; }
+  .btn-save svg { width: 14px; height: 14px; stroke: #fff; fill: none; }
+  .btn-cancel { padding: 10px 24px; background: #fff; color: #64748b; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; transition: all .15s; }
+  .btn-cancel:hover { background: #f8fafc; color: #0f172a; }
+  @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .field-row { grid-template-columns: 1fr; } }
+</style>
+
+<a class="back-btn" href="{% url 'course_list' %}">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+  Back to Courses
+</a>
+
+<div class="page-header">
+  <h2>Add New Course</h2>
+  <p>Fill in the details below to create a new course.</p>
+</div>
+
+{% if form.errors %}
+  <div class="alert alert-error">Please fix the errors below and try again.</div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <!-- Hidden file input driven by the upload box -->
+  <div style="display:none;">{{ form.course_url }}</div>
+
+  <div class="form-grid">
+
+    <!-- Left: Image Upload -->
+    <div class="image-card">
+      <div class="image-banner"></div>
+      <div class="image-body">
+        <div class="image-preview-wrap">
+          <div class="image-preview-box" id="imgPreview">
+            <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+        </div>
+        <div class="image-card-title">Course Thumbnail</div>
+        <div class="image-card-sub">Upload a cover image</div>
+        <div class="image-divider"></div>
+        <label class="upload-box" for="id_course_url">
+          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <span id="file-label">Click to upload</span>
+        </label>
+        <p class="upload-hint">JPG, PNG — max 2MB</p>
+        {% if form.course_url.errors %}
+          <p class="error-msg">{{ form.course_url.errors.0 }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right: Fields -->
+    <div class="right-col">
+      <div class="form-card">
+        <div class="form-card-title">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Course Details
+        </div>
+
+        <div class="field">
+          <label for="id_title">Course Title</label>
+          {{ form.title }}
+          {% if form.title.errors %}<p class="error-msg">{{ form.title.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="field">
+          <label for="id_description">Description</label>
+          {{ form.description }}
+          {% if form.description.errors %}<p class="error-msg">{{ form.description.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="field-row">
+          <div class="field" style="margin-bottom:0;">
+            <label for="id_duration">Duration</label>
+            {{ form.duration }}
+            {% if form.duration.errors %}<p class="error-msg">{{ form.duration.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label for="id_video_link">YouTube Link <span class="opt-tag">optional</span></label>
+            <div class="url-wrap">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              {{ form.video_link }}
+            </div>
+            {% if form.video_link.errors %}<p class="error-msg">{{ form.video_link.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-save">
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Course
+        </button>
+        <a class="btn-cancel" href="{% url 'course_list' %}">Cancel</a>
+      </div>
+    </div>
+
+  </div>
+</form>
+
+<script>
+  document.getElementById('id_course_url').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    document.getElementById('file-label').textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('imgPreview').outerHTML =
+        `<img id="imgPreview" class="preview-actual" src="${e.target.result}" alt="preview"/>`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* Apply consistent styling to Django-rendered inputs */
+  document.querySelectorAll('.form-card input, .form-card textarea').forEach(el => {
+    el.style.cssText = 'padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-family:DM Sans,sans-serif;font-size:14px;color:#0f172a;background:#f8fafc;outline:none;width:100%;box-sizing:border-box;';
+    el.addEventListener('focus', () => { el.style.borderColor='#0ea5e9'; el.style.background='#fff'; el.style.boxShadow='0 0 0 3px rgba(14,165,233,0.1)'; });
+    el.addEventListener('blur',  () => { el.style.borderColor='#e2e8f0'; el.style.background='#f8fafc'; el.style.boxShadow='none'; });
+  });
+
+  /* Extra left padding for video link input */
+  const videoInput = document.getElementById('id_video_link');
+  if (videoInput) videoInput.style.paddingLeft = '36px';
+</script>
+{% endblock %}
