@@ -207,7 +207,7 @@
     </a>
 
     <a href="{% url 'student_mgmt'%}"
-        class="nav-item {% if request.resolver_match.url_name == 'view_student' or request.resolver_match.url_name == 'student_mgmt' or request.resolver_match.url_name == 'edit_student_admin' %}active{% endif %}">
+        class="nav-item {% if request.resolver_match.url_name == 'view_student' or request.resolver_match.url_name == 'student_mgmt' or request.resolver_match.url_name == 'edit_student_admin' or request.resolver_match.url_name == 'add_new_student' %}active{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -219,7 +219,7 @@
     </a>
 
     <a href="{% url 'course_list' %}"
-        class="nav-item {% if request.resolver_match.url_name == 'course_list' %}active{% endif %}">
+        class="nav-item {% if request.resolver_match.url_name == 'course_list' or request.resolver_match.url_name == 'add_course' %}active{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
@@ -229,7 +229,7 @@
     </a>
 
     <a href="{% url 'enrollments' %}"
-        class="nav-item {% if request.resolver_match.url_name == 'enrollment_list' %}active{% endif %}">
+        class="nav-item {% if request.resolver_match.url_name == 'enrollments' %}active{% endif %}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />

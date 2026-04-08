@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from .forms import CourseForm, CourseEditForm
 from .models import Course, Enrollment
@@ -73,6 +74,20 @@ def edit_course(req, courseId):
     }
     return render(req, "admin/course/edit_course.html", context)
 
+# course deletion -> only admins can do this
+@login_required # it's a function that check session id is have the requester
+def delete_course(req, courseId):
+    if not req.user.is_staff:
+        return redirect('login')
+    
+    if req.method == 'POST':
+        course = get_object_or_404(Course, id=courseId)
+        course.delete()
+        messages.success(req, 'course deleted success!')
+        return redirect('course_list')
+    messages.error(req, 'something went wrong!')
+    return redirect('view_course', courseId)
+    
 # admin view
 @login_required
 def enrollments_view(req):
