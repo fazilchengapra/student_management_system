@@ -1,0 +1,388 @@
+{% extends 'layouts/admin_base.html' %}
+
+{% block admin_content %}
+<style>
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+        text-decoration: none;
+        margin-bottom: 20px;
+        transition: color .15s;
+    }
+
+    .back-btn:hover {
+        color: #0ea5e9;
+    }
+
+    .back-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    /* Left Sidebar Cards */
+    .status-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 24px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .request-id {
+        font-size: 12px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 12px;
+    }
+
+    .status-pill {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 20px;
+    }
+
+    .status-enrolled {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .status-in_progress {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-completed {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .status-dropped {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .status-pending {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .date-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .date-row:last-child {
+        border-bottom: none;
+    }
+
+    .date-label {
+        color: #64748b;
+    }
+
+    .date-value {
+        font-weight: 500;
+        color: #0f172a;
+    }
+
+    /* Action Buttons */
+    .action-bar-vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-action {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all .2s;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .btn-approve {
+        background: #16a34a;
+        color: #fff;
+    }
+
+    .btn-approve:hover {
+        background: #15803d;
+    }
+
+    .btn-reject {
+        background: #fff;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+    }
+
+    .btn-reject:hover {
+        background: #fef2f2;
+    }
+
+    /* Right Column Cards */
+    .right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 24px;
+    }
+
+    .info-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .header-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0ea5e9;
+    }
+
+    .header-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .header-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .info-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .info-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .info-value {
+        font-size: 15px;
+        font-weight: 500;
+        color: #0f172a;
+    }
+
+    .info-value a {
+        color: #0ea5e9;
+        text-decoration: none;
+    }
+
+    .info-value a:hover {
+        text-decoration: underline;
+    }
+
+    .course-thumbnail {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: #f1f5f9;
+    }
+
+    @media (max-width: 768px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<a class="back-btn" href="#{ url 'enrollment_list' %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M19 12H5M12 5l-7 7 7 7" />
+    </svg>
+    Back to Enrollments
+</a>
+
+<div class="detail-grid">
+
+    <div class="left-col">
+        <div class="status-card">
+            <div class="request-id">Enrollment #{{ enrollment.id|stringformat:"04d" }}</div>
+
+            <span class="status-pill status-{{ enrollment.status }}">
+                {{ enrollment.get_status_display }}
+            </span>
+
+            <div class="date-row">
+                <span class="date-label">Requested On:</span>
+                <span class="date-value">{{ enrollment.enrolled_at|date:"d M Y" }}</span>
+            </div>
+            <div class="date-row">
+                <span class="date-label">Last Updated:</span>
+                <span class="date-value">{{ enrollment.updated_at|date:"d M Y" }}</span>
+            </div>
+
+            {% if enrollment.status == 'pending' %}
+            <div class="action-bar-vertical">
+                <form action="#{ url 'update_enrollment_admin' enrollment.id 'enrolled' %}" method="POST"
+                    style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action btn-approve">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Approve Request
+                    </button>
+                </form>
+
+                <form action="#{ url 'update_enrollment_admin' enrollment.id 'dropped' %}" method="POST"
+                    style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action btn-reject"
+                        onclick="return confirm('Are you sure you want to reject this enrollment request?');">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        Reject Request
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="right-col">
+
+        <div class="info-card">
+            <div class="info-card-header">
+                <div class="header-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="header-title">Student Information</div>
+            </div>
+
+            <div class="info-grid">
+                
+                <div class="info-group">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">@{{ enrollment.student.username }}</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Email Address</span>
+                    <span class="info-value">{{ enrollment.student.email|default:"—" }}</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Student Profile</span>
+                    <span class="info-value">
+                        <a href="{% url 'view_student' enrollment.student.id %}">View Full Profile →</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-header">
+                <div class="header-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <div class="header-title">Course Information</div>
+            </div>
+
+            <div class="info-grid" style="align-items: center;">
+                <div class="info-group"
+                    style="grid-column: 1 / -1; display: flex; flex-direction: row; gap: 16px; align-items: center; margin-bottom: 8px;">
+                    {% if enrollment.course.course_url %}
+                    <img src="{{ enrollment.course.course_url.url }}" alt="Course Thumbnail" class="course-thumbnail">
+                    {% else %}
+                    <div class="course-thumbnail"
+                        style="display: flex; align-items: center; justify-content: center; font-weight: bold; color: #94a3b8; font-size: 20px;">
+                        {{ enrollment.course.title|first|upper }}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <div class="info-label">Course Title</div>
+                        <div class="info-value" style="font-size: 18px;">{{ enrollment.course.title }}</div>
+                    </div>
+                </div>
+
+                <div class="info-group">
+                    <span class="info-label">Duration</span>
+                    <span class="info-value">{{ enrollment.course.duration }}</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Course Details</span>
+                    <span class="info-value">
+                        <a href="{% url 'view_course' enrollment.course.id %}">View Course Details →</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

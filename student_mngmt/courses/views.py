@@ -109,6 +109,19 @@ def enrollments_view(req):
             "total_enrollments": total,
         },
     )
+    
+#admin view specific enrollment
+def view_enrollment(req, enrollId):
+    if not req.user.is_staff:
+        return redirect('login')
+    
+    enrollment = get_object_or_404(Enrollment, id=enrollId)
+    print(enrollment)
+    context = {
+        'enrollment':enrollment
+    }
+    
+    return render(req, 'admin/enrollments/view_enrollment.html', context)
 
 
 # student course view -> (student my courses section)

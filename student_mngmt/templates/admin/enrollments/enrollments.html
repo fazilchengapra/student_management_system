@@ -381,7 +381,7 @@
         </td>
         <td>
           <div class="action-btns">
-            <a class="btn-action btn-view" href="#{ url 'view_enrollment' enrollment.id %}">View</a>
+            <a class="btn-action btn-view" href="{% url 'view_enrollment' enrollment.id %}">View</a>
             {% if enrollment.status == 'pending'%}
             <a class="btn-action btn-approve" href="#{ url 'approve_enrollment' enrollment.id %}">Approve</a>
             <a class="btn-action btn-reject" href="#{ url 'reject_enrollment' enrollment.id %}"
