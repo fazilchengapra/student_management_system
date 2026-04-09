@@ -162,19 +162,20 @@ def enroll_course(req, courseId):
     if req.user.is_staff:
         return redirect("admin")
 
-    course = get_object_or_404(Course, id=courseId)
-    student = req.user
+    if req.method == 'POST':
+        course = get_object_or_404(Course, id=courseId)
+        student = req.user
 
-    is_already_enrolled = Enrollment.objects.filter(
-        student=student, course=course
-    ).exists()
+        is_already_enrolled = Enrollment.objects.filter(
+            student=student, course=course
+        ).exists()
 
-    if is_already_enrolled:
-        messages.warning(req, f"the {course.title} is already enrolled!")
+        if is_already_enrolled:
+            messages.warning(req, f"the {course.title} is already enrolled!")
 
-    else:
-        Enrollment.objects.create(student=student, course=course)
-        messages.success(req, "Enrollment request sent to admin!")
+        else:
+            Enrollment.objects.create(student=student, course=course)
+            messages.success(req, "Enrollment request sent to admin!")
 
     return redirect("my_courses")
 
@@ -190,3 +191,23 @@ def student_view_course(req, courseId):
     context = {"course": course, "enrollment": enrollment}
 
     return render(req, "student/course/view_course.html", context)
+
+@login_required
+def update_course_status(req, courseId, status):
+    if req.user.is_staff:
+        return redirect('admin')
+    
+    if req.method == 'POST':
+        student = req.user
+        enrollment = get_object_or_404(Enrollment, student=student, course=courseId)
+        
+        validStatuses = [choice[0] for choice in Enrollment.STATUS_CHOICES if choice[0] not in ['enrolled','pending']]
+        if status not in validStatuses:
+            messages.error(req, 'Something went wrong.')
+            
+        enrollment.status = status
+        enrollment.save()
+        messages.success(req, 'Status updated success!')
+            
+    return redirect('view_course_student', courseId)
+        

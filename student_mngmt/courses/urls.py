@@ -9,7 +9,8 @@ from .views import (
     my_courses_view,
     explore_courses,
     enroll_course,
-    student_view_course
+    student_view_course,
+    update_course_status
 )
 
 urlpatterns = [
@@ -25,7 +26,7 @@ urlpatterns = [
     path('student/explore-courses', explore_courses, name='explore_courses'),
     path('student/course/enroll/<int:courseId>', enroll_course, name='enroll_course'),
     path('student/course/view/<int:courseId>', student_view_course, name='view_course_student'),
-    # path('student/course/update-status/<int:courseId>'),
+    path('student/course/update-status/<int:courseId>/<str:status>', update_course_status, name='update_course_status'),
     # admin enrollment management
     path("admin/enrollments", enrollments_view, name="enrollments"),
 ]

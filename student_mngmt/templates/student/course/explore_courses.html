@@ -162,30 +162,34 @@
     <div class="course-card">
         <div class="course-thumbnail">
             {% if course.course_url %}
-                <img src="{{ course.course_url.url }}" alt="{{ course.title }}">
+            <img src="{{ course.course_url.url }}" alt="{{ course.title }}">
             {% else %}
-                <div class="course-thumbnail-placeholder">{{ course.title|first|upper }}</div>
+            <div class="course-thumbnail-placeholder">{{ course.title|first|upper }}</div>
             {% endif %}
-            
+
             {% if course.duration %}
-                <span class="course-duration">{{ course.duration }}</span>
+            <span class="course-duration">{{ course.duration }}</span>
             {% endif %}
         </div>
-        
+
         <div class="course-body">
             <h3 class="course-title">{{ course.title }}</h3>
             <div class="course-desc">
                 {{ course.description|truncatechars:120 }}
             </div>
-            
+
             <div class="course-footer">
-                <a href="{% url 'enroll_course' course.id %}" class="btn-enroll">Request to Enroll</a>
+                <form action="{% url 'enroll_course' course.id %}" method="post">
+                    {%csrf_token%}
+                    <button class="btn-enroll">Request to Enroll</button>
+                </form>
             </div>
         </div>
     </div>
     {% empty %}
     <div class="empty-state">
-        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
         </svg>
         <p class="empty-state-text">You are already enrolled in all available courses!</p>
