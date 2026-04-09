@@ -98,11 +98,35 @@
         letter-spacing: 0.05em;
     }
 
-    .status-enrolled { background: #e0f2fe; color: #0284c7; }
-    .status-in_progress { background: #fef3c7; color: #d97706; }
-    .status-completed { background: #dcfce7; color: #16a34a; }
-    .status-dropped { background: #fee2e2; color: #dc2626; }
-    .status-pending { background: #f1f5f9; color: #475569; }
+    .status-enrolled {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .status-in_progress {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-completed {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .status-dropped {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .status-pending {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .status-rejected {
+        background: #fef2f2;
+        color: #b91c1c;
+    }
 
     .right-col {
         display: flex;
@@ -140,26 +164,42 @@
         background: linear-gradient(135deg, #0ea5e9, #38bdf8);
         color: #fff;
     }
-    .btn-start:hover { opacity: .9; color: #fff; }
+
+    .btn-start:hover {
+        opacity: .9;
+        color: #fff;
+    }
 
     .btn-complete {
         background: #16a34a;
         color: #fff;
     }
-    .btn-complete:hover { background: #15803d; color: #fff; }
+
+    .btn-complete:hover {
+        background: #15803d;
+        color: #fff;
+    }
 
     .btn-drop {
         background: #fff;
         color: #ef4444;
         border: 1px solid #fecaca;
     }
-    .btn-drop:hover { background: #fef2f2; color: #ef4444; }
+
+    .btn-drop:hover {
+        background: #fef2f2;
+        color: #ef4444;
+    }
 
     .btn-video {
         background: #4f46e5;
         color: #fff;
     }
-    .btn-video:hover { background: #4338ca; color: #fff; }
+
+    .btn-video:hover {
+        background: #4338ca;
+        color: #fff;
+    }
 
     .action-message {
         font-size: 14px;
@@ -222,13 +262,19 @@
     }
 
     @media (max-width: 768px) {
-        .detail-grid { grid-template-columns: 1fr; }
-        .info-grid { grid-template-columns: 1fr; }
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <a class="back-btn" href="{% url 'my_courses' %}">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
         <path d="M19 12H5M12 5l-7 7 7 7" />
     </svg>
     Back to My Courses
@@ -247,11 +293,11 @@
                 {% endif %}
             </div>
             <div class="profile-name">{{ course.title }}</div>
-            
+
             <span class="status-pill status-{{ enrollment.status }}">
                 {{ enrollment.get_status_display }}
             </span>
-            
+
             <div style="font-size: 13px; color: #64748b; margin-top: 8px;">
                 Duration: {{ course.duration }}
             </div>
@@ -261,67 +307,77 @@
     <div class="right-col">
 
         <div class="action-bar">
-            
+
             {% if enrollment.status == 'enrolled' %}
-                <form action="{% url 'update_course_status' course.id 'in_progress' %}" method="POST" style="margin: 0;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-action btn-start">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                        </svg>
-                        Start Course
-                    </button>
-                </form>
-                <span class="action-message" style="margin-left: 10px;">Ready to begin learning?</span>
+            <form action="{% url 'update_course_status' course.id 'in_progress' %}" method="POST" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-start">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Start Course
+                </button>
+            </form>
+            <span class="action-message" style="margin-left: 10px;">Ready to begin learning?</span>
 
             {% elif enrollment.status == 'in_progress' %}
-                {% if course.video_link %}
-                <a href="{{ course.video_link }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-video">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
-                        <line x1="7" y1="2" x2="7" y2="22"></line>
-                        <line x1="17" y1="2" x2="17" y2="22"></line>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <line x1="2" y1="7" x2="7" y2="7"></line>
-                        <line x1="2" y1="17" x2="7" y2="17"></line>
-                        <line x1="17" y1="17" x2="22" y2="17"></line>
-                        <line x1="17" y1="7" x2="22" y2="7"></line>
+            {% if course.video_link %}
+            <a href="{{ course.video_link }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-video">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                    <line x1="7" y1="2" x2="7" y2="22"></line>
+                    <line x1="17" y1="2" x2="17" y2="22"></line>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <line x1="2" y1="7" x2="7" y2="7"></line>
+                    <line x1="2" y1="17" x2="7" y2="17"></line>
+                    <line x1="17" y1="17" x2="22" y2="17"></line>
+                    <line x1="17" y1="7" x2="22" y2="7"></line>
+                </svg>
+                Watch Video
+            </a>
+            {% endif %}
+
+            <form action="{% url 'update_course_status' course.id 'completed' %}" method="POST" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-complete">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
-                    Watch Video
-                </a>
-                {% endif %}
+                    Mark as Complete
+                </button>
+            </form>
 
-                <form action="{% url 'update_course_status' course.id 'completed' %}" method="POST" style="margin: 0;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-action btn-complete">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                        Mark as Complete
-                    </button>
-                </form>
-
-                <form action="{% url 'update_course_status' course.id 'dropped' %}" method="POST" style="margin: 0; margin-left: auto;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-action btn-drop" onclick="return confirm('Are you sure you want to drop {{ course.title }}? All progress will be lost.')">
-                        Drop Course
-                    </button>
-                </form>
+            <form action="{% url 'update_course_status' course.id 'dropped' %}" method="POST"
+                style="margin: 0; margin-left: auto;">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-drop"
+                    onclick="return confirm('Are you sure you want to drop {{ course.title }}? All progress will be lost.')">
+                    Drop Course
+                </button>
+            </form>
 
             {% elif enrollment.status == 'completed' %}
-                <span class="action-message">
-                    🎉 Congratulations! You have successfully completed this course.
-                </span>
-                
+            <span class="action-message">
+                🎉 Congratulations! You have successfully completed this course.
+            </span>
+
             {% elif enrollment.status == 'dropped' %}
-                <span class="action-message">
-                    You have dropped this course.
-                </span>
+            <span class="action-message">
+                You have dropped this course.
+            </span>
+
+            {% elif enrollment.status == 'rejected' %}
+            <span class="action-message">
+                Admin has rejected your access to this course. Please contact the admin. </span>
             {% else %}
-                <span class="action-message">
-                    Course enrollment is currently pending approval.
-                </span>
+
+            <span class="action-message">
+                Course enrollment is currently pending approval.
+            </span>
             {% endif %}
 
         </div>

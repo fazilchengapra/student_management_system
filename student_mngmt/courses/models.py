@@ -30,6 +30,7 @@ class Enrollment(models.Model):
     PENDING = "pending"
     COMPLETED = "completed"
     DROPPED = "dropped"
+    REJECT = "rejected"
 
     STATUS_CHOICES = (
         (ENROLLED, "Enrolled"),
@@ -37,6 +38,7 @@ class Enrollment(models.Model):
         (PENDING, "Pending"),
         (COMPLETED, "Completed"),
         (DROPPED, "Dropped"),
+        (REJECT, "Rejected"),
     )
 
     student = models.ForeignKey(

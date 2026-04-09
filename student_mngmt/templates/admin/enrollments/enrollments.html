@@ -208,7 +208,7 @@
     color: #7c3aed;
   }
 
-  /* PENDING (already exists but improved naming consistency) */
+  /* PENDING */
   .badge-pending {
     background: #fef9c3;
     color: #b45309;
@@ -226,11 +226,19 @@
     color: #dc2626;
   }
 
+  /* REJECTED - New Status Added Here */
+  .badge-rejected {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+
   .action-btns {
     display: flex;
     gap: 5px;
   }
 
+  /* Changed to proper form buttons to match POST requests for database changes */
   .btn-action {
     padding: 5px 10px;
     border-radius: 6px;
@@ -242,6 +250,7 @@
     align-items: center;
     text-decoration: none;
     transition: all .15s;
+    background: none;
   }
 
   .btn-view {
@@ -376,16 +385,23 @@
         <td>{{ enrollment.enrolled_at|date:"d M Y" }}</td>
         <td>
           <span class="badge badge-{{ enrollment.status }}">
-            {{ enrollment.status|capfirst }}
+            {{ enrollment.get_status_display }}
           </span>
         </td>
         <td>
           <div class="action-btns">
             <a class="btn-action btn-view" href="{% url 'view_enrollment' enrollment.id %}">View</a>
-            {% if enrollment.status == 'pending'%}
-            <a class="btn-action btn-approve" href="#{ url 'approve_enrollment' enrollment.id %}">Approve</a>
-            <a class="btn-action btn-reject" href="#{ url 'reject_enrollment' enrollment.id %}"
-              onclick="return confirm('Reject this enrollment?')">Reject</a>
+            
+            {% if enrollment.status == 'pending' %}
+              <form action="{% url 'update_enrollment_admin' enrollment.id 'enrolled' %}" method="POST" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-approve">Approve</button>
+              </form>
+
+              <form action="{% url 'update_enrollment_admin' enrollment.id 'rejected' %}" method="POST" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-reject" onclick="return confirm('Reject this enrollment?')">Reject</button>
+              </form>
             {% endif %}
           </div>
         </td>

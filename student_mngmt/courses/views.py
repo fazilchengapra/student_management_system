@@ -109,19 +109,42 @@ def enrollments_view(req):
             "total_enrollments": total,
         },
     )
-    
-#admin view specific enrollment
+
+
+# admin view specific enrollment
+@login_required
 def view_enrollment(req, enrollId):
     if not req.user.is_staff:
-        return redirect('login')
-    
+        return redirect("login")
+
     enrollment = get_object_or_404(Enrollment, id=enrollId)
     print(enrollment)
-    context = {
-        'enrollment':enrollment
-    }
-    
-    return render(req, 'admin/enrollments/view_enrollment.html', context)
+    context = {"enrollment": enrollment}
+
+    return render(req, "admin/enrollments/view_enrollment.html", context)
+
+
+@login_required
+def update_enrollment_status(req, enrollmentId, status):
+    print("called")
+    if not req.user.is_staff:
+        return redirect("login")
+
+    enrollment = get_object_or_404(Enrollment, id=enrollmentId)
+    validStatuses = [
+        choice[0]
+        for choice in Enrollment.STATUS_CHOICES
+        if choice[0] not in ["in_progress", "pending", "Completed"]
+    ]
+
+    if status in validStatuses:
+        enrollment.status = status
+        enrollment.save()
+        messages.success(req, "Enrollment status updated!")
+    else:
+        messages.success(req, "Something went wrong!")
+
+    return redirect("view_enrollment", enrollmentId)
 
 
 # student course view -> (student my courses section)
@@ -175,7 +198,7 @@ def enroll_course(req, courseId):
     if req.user.is_staff:
         return redirect("admin")
 
-    if req.method == 'POST':
+    if req.method == "POST":
         course = get_object_or_404(Course, id=courseId)
         student = req.user
 
@@ -205,22 +228,26 @@ def student_view_course(req, courseId):
 
     return render(req, "student/course/view_course.html", context)
 
+
 @login_required
 def update_course_status(req, courseId, status):
     if req.user.is_staff:
-        return redirect('admin')
-    
-    if req.method == 'POST':
+        return redirect("admin")
+
+    if req.method == "POST":
         student = req.user
         enrollment = get_object_or_404(Enrollment, student=student, course=courseId)
-        
-        validStatuses = [choice[0] for choice in Enrollment.STATUS_CHOICES if choice[0] not in ['enrolled','pending']]
+
+        validStatuses = [
+            choice[0]
+            for choice in Enrollment.STATUS_CHOICES
+            if choice[0] not in ["enrolled", "pending"]
+        ]
         if status not in validStatuses:
-            messages.error(req, 'Something went wrong.')
-            
+            messages.error(req, "Something went wrong.")
+
         enrollment.status = status
         enrollment.save()
-        messages.success(req, 'Status updated success!')
-            
-    return redirect('view_course_student', courseId)
-        
+        messages.success(req, "Status updated success!")
+
+    return redirect("view_course_student", courseId)
