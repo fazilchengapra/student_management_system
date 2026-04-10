@@ -241,7 +241,7 @@ def update_course_status(req, courseId, status):
         validStatuses = [
             choice[0]
             for choice in Enrollment.STATUS_CHOICES
-            if choice[0] not in ["enrolled", "pending"]
+            if choice[0] not in ["enrolled", "pending", "rejected"]
         ]
         if status not in validStatuses:
             messages.error(req, "Something went wrong.")

@@ -229,7 +229,7 @@
         </div>
 
         <div class="form-actions">
-            <a href="#{ url 'course_detail' course.id %}" class="btn-cancel">Cancel</a>
+            <a href="{% url 'view_course' course.id %}" class="btn-cancel">Cancel</a>
             <button type="submit" class="btn-submit">Save Changes</button>
         </div>
     </form>
