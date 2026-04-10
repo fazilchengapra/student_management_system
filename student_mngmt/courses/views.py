@@ -4,6 +4,7 @@ from django.contrib import messages
 
 from .forms import CourseForm, CourseEditForm
 from .models import Course, Enrollment
+from utils.email import send_custom_mail
 
 # Create your views here.
 
@@ -141,6 +142,17 @@ def update_enrollment_status(req, enrollmentId, status):
         enrollment.status = status
         enrollment.save()
         messages.success(req, "Enrollment status updated!")
+
+        if status == "enrolled":
+            send_custom_mail(
+                subject="Course Access Approved",
+                message=f"""
+                Good News 🎉
+                Your request to access the course {enrollment.course.title} has been approved by the admin.
+                """,
+                recipient_list=[enrollment.student.email],
+            )
+
     else:
         messages.success(req, "Something went wrong!")
 
@@ -211,6 +223,12 @@ def enroll_course(req, courseId):
 
         else:
             Enrollment.objects.create(student=student, course=course)
+            if req.user.email:
+                send_custom_mail(
+                    subject=f"{course.title} Enrollment Request Sent Success!",
+                    message=f"Your enrollment request sent to admin for to access a {course.title} please wait for admin review.",
+                    recipient_list=[req.user.email],
+                )
             messages.success(req, "Enrollment request sent to admin!")
 
     return redirect("my_courses")
