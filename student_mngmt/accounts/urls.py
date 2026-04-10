@@ -10,7 +10,7 @@ from .views import (
     edit_student,
     toggle_student_status,
     delete_student,
-    add_new_student
+    add_new_student,
 )
 
 urlpatterns = [
@@ -20,9 +20,15 @@ urlpatterns = [
     path("logout", logout_view, name="logout"),
     path("student/profile", my_profile, name="my_profile"),
     path("admin/students", admin_students_view, name="student_mgmt"),
-    path('admin/student/add-student/', add_new_student, name='add_new_student'),
-    path("admin/student/<int:stdId>", view_student, name='view_student'),
-    path('admin/student/<int:stdId>/edit', edit_student, name='edit_student_admin'),
-    path('admin/student/toggle-user/<int:stdId>', toggle_student_status, name='toggle_student'),
-    path('admin/student/delete-user/<int:stdId>', delete_student, name='delete_student'),
+    path("admin/student/add-student/", add_new_student, name="add_new_student"),
+    path("admin/student/<int:stdId>", view_student, name="view_student"),
+    path("admin/student/<int:stdId>/edit", edit_student, name="edit_student_admin"),
+    path(
+        "admin/student/toggle-user/<int:stdId>",
+        toggle_student_status,
+        name="toggle_student",
+    ),
+    path(
+        "admin/student/delete-user/<int:stdId>", delete_student, name="delete_student"
+    ),
 ]

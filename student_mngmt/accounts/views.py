@@ -4,10 +4,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.core.mail import send_mail
+from django.conf import settings
 
 from .forms import RegisterForm, UpdateStudentForm, StudentSelfUpdateForm
 from .models import User
 from courses.models import Course, Enrollment
+from utils.email import send_custom_mail
 
 
 # Create your views here.
@@ -58,6 +61,13 @@ def register_view(req):
             user.save()
 
             messages.success(req, "Account registered successfully!")
+            
+            if form.cleaned_data["email"]:
+                send_custom_mail(
+                    subject="Welcome to STD_MANAGEMENT",
+                    message=f"Welcome {form.cleaned_data['username']} your account registered success enjoy and keep learning.",
+                    recipient_list=[form.cleaned_data["email"]],
+                )
             return redirect("login")
     else:
         form = RegisterForm()
@@ -119,6 +129,7 @@ def student_base(req):
 
     print(enrollments)
     return render(req, "student/dashboard/dashboard.html", context)
+
 
 # for individual students only.
 @login_required
