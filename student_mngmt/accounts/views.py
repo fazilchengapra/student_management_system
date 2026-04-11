@@ -4,8 +4,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
-from django.core.mail import send_mail
-from django.conf import settings
 
 from .forms import RegisterForm, UpdateStudentForm, StudentSelfUpdateForm
 from .models import User
@@ -61,7 +59,7 @@ def register_view(req):
             user.save()
 
             messages.success(req, "Account registered successfully!")
-            
+
             if form.cleaned_data["email"]:
                 send_custom_mail(
                     subject="Welcome to STD_MANAGEMENT",
